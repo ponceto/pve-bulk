@@ -129,8 +129,8 @@ Actions:
 Options:
 
     --help
-    --ct-list={ctid,...}    ct list (defaults to pct list)
-    --vm-list={vmid,...}    vm list (defaults to qm list)
+    --ct-list={ctid,...}    ct list (defaults to none, specify all to select all CTs as with pct list)
+    --vm-list={vmid,...}    vm list (defaults to none, specify all to select all VMs as with qm list)
 
 Environment variables:
 
@@ -183,9 +183,14 @@ fi
 
 if [ "${pve_ct_list}" = 'not-set' ]
 then
-    pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ print $1 }')
+    pve_ct_list="0"
 else
-    pve_ct_list=$(echo "${pve_ct_list}" | tr ',' ' ')
+	if [ "${pve_ct_list}" = 'all' ]
+	then
+		pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ print $1 }')
+	else
+		pve_ct_list=$(echo "${pve_ct_list}" | tr ',' ' ')
+	fi
 fi
 
 # ----------------------------------------------------------------------------
@@ -194,9 +199,14 @@ fi
 
 if [ "${pve_vm_list}" = 'not-set' ]
 then
-    pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ print $1 }')
+    pve_vm_list="0"
 else
-    pve_vm_list=$(echo "${pve_vm_list}" | tr ',' ' ')
+	if [ "${pve_vm_list}" = 'all' ]
+	then
+		pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ print $1 }')
+	else
+		pve_vm_list=$(echo "${pve_vm_list}" | tr ',' ' ')
+	fi
 fi
 
 # ----------------------------------------------------------------------------
@@ -228,7 +238,7 @@ do
         'ct:snapshot')
             parameter1="${arg_snapname}"
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" "${parameter1}" > /dev/null 2>&1
-            status="${?}"
+	    status="${?}"
             ;;
         'ct:rollback')
             parameter1="${arg_snapname}"
