@@ -54,9 +54,9 @@ Options:
 Environment variables:
 
     PVE_CT_MANAGER          ct manager (defaults to pct)
-    PVE_CT_LIST             ct list    (defaults to pct list)
+    PVE_CT_LIST             ct list    (defaults to none)
     PVE_VM_MANAGER          vm manager (defaults to qm)
-    PVE_VM_LIST             vm list    (defaults to qm list)
+    PVE_VM_LIST             vm list    (defaults to none)
 
 ```
 
