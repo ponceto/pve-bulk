@@ -60,6 +60,8 @@ case "${arg_action}" in
         ;;
     'stop')
         ;;
+    'listsnapshot')
+        ;;
     'snapshot' | 'rollback' | 'delsnapshot')
         if [ "${#}" -gt '0' ]
         then
@@ -122,6 +124,7 @@ Actions:
     start
     shutdown
     stop
+    listsnapshot
     snapshot <snapname>
     rollback <snapname>
     delsnapshot <snapname>
@@ -235,6 +238,10 @@ do
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" > /dev/null 2>&1
             status="${?}"
             ;;
+        'ct:listsnapshot')
+            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}"
+	    status="${?}"
+            ;;
         'ct:snapshot')
             parameter1="${arg_snapname}"
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" "${parameter1}" > /dev/null 2>&1
@@ -292,6 +299,10 @@ do
         'vm:stop')
             parameter1=""
             ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" > /dev/null 2>&1
+            status="${?}"
+            ;;
+        'vm:listsnapshot')
+            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}"
             status="${?}"
             ;;
         'vm:snapshot')
