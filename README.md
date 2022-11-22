@@ -40,6 +40,7 @@ Actions:
     start
     shutdown
     stop
+    status
     listsnapshot
     snapshot <snapname>
     rollback <snapname>

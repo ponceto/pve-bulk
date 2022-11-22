@@ -60,6 +60,8 @@ case "${arg_action}" in
         ;;
     'stop')
         ;;
+    'status')
+        ;;
     'listsnapshot')
         ;;
     'snapshot' | 'rollback' | 'delsnapshot')
@@ -124,6 +126,7 @@ Actions:
     start
     shutdown
     stop
+    status
     listsnapshot
     snapshot <snapname>
     rollback <snapname>
@@ -238,7 +241,13 @@ do
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" > /dev/null 2>&1
             status="${?}"
             ;;
+        'ct:status')
+	    echo -n "vm${pve_ct_id}: "
+            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}"
+	    status="${?}"
+            ;;
         'ct:listsnapshot')
+	    echo "vm${pve_ct_id}: "
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}"
 	    status="${?}"
             ;;
@@ -301,13 +310,20 @@ do
             ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" > /dev/null 2>&1
             status="${?}"
             ;;
+        'vm:status')
+	    echo -n "vm${pve_vm_id}: "
+            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}"
+            status="${?}"
+            ;;
         'vm:listsnapshot')
+	    echo "vm${pve_vm_id}: "
             ${pve_vm_manager} "${arg_action}" "${pve_vm_id}"
             status="${?}"
             ;;
         'vm:snapshot')
             parameter1="${arg_snapname}"
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" "${parameter1}" > /dev/null 2>&1
+            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" "${parameter1}"
+            #${pve_vm_manager} "${arg_action}" "${pve_vm_id}" "${parameter1}" > /dev/null 2>&1
             status="${?}"
             ;;
         'vm:rollback')
