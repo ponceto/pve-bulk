@@ -242,12 +242,12 @@ do
             status="${?}"
             ;;
         'ct:status')
-	    echo -n "vm${pve_ct_id}: "
+	    echo -n "ct${pve_ct_id}: "
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}"
 	    status="${?}"
             ;;
         'ct:listsnapshot')
-	    echo "vm${pve_ct_id}: "
+	    echo "ct${pve_ct_id}: "
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}"
 	    status="${?}"
             ;;
