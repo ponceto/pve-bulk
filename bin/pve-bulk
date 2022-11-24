@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # pve-bulk - Copyright (c) 2018-2021 - Olivier Poncet
 #
@@ -59,6 +59,14 @@ case "${arg_action}" in
     'shutdown')
         ;;
     'stop')
+        echo -e "\nStop will instantly terminate CTs/VMs, if possible use shutdown which will [possibly] start an ordered shutdown of services."
+	echo -n "Continue with stop? [y/N] "
+        read answer
+        if ! [[ "x$answer" == "xy" ]] && ! [[ "x$answer" == "xY" ]]
+	then
+            echo -e "\nStop aborted\n"
+            exit 0
+        fi
         ;;
     'status')
         ;;
