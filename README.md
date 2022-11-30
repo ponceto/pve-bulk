@@ -6,13 +6,15 @@
 
 ## Description
 
-This script will execute the given action on containers and virtual machines specified in the CT/VM lists.
+This script will execute the given action on each container and each virtual machine specified int the command-line.
 
 You can specify the CT list by providing the `--ct-list` command-line option or by setting the `PVE_CT_LIST` environment variable.
 
 You can specify the VM list by providing the `--vm-list` command-line option or by setting the `PVE_VM_LIST` environment variable.
 
-CT/VM lists default to 0, i.e. no CTs/VMs are selected by default. To specify all CTs/VMs pass all as parameter, like --ct-list=all.
+By default, CT/VM lists default to `none`, meaning that no CTs/VMs are selected. To specify all CTs/VMs pass `all` as parameter, like `--ct-list=all`.
+
+You can specify `--all` to select all CT/VM.
 
 ## Installation
 
@@ -49,8 +51,9 @@ Actions:
 Options:
 
     --help
-    --ct-list={ctid,...}    ct list (defaults to none, specify all to select all CTs as with pct list)
-    --vm-list={vmid,...}    vm list (defaults to none, specify all to select all VMs as with qm list)
+    --ct-list={ctid,...}    ct list (defaults to 'none'; specify 'all' to select all CTs as with pct list)
+    --vm-list={vmid,...}    vm list (defaults to 'none'; specify 'all' to select all VMs as with qm list)
+    --all                   set ct-list and vm-list to 'all'
 
 Environment variables:
 
@@ -66,7 +69,7 @@ Environment variables:
 Create the snapshot named `STABLE` on each CT/VM:
 
 ```
-root@pve-node:~# pve-bulk snapshot STABLE --vm-list=all --ct-list=all
+root@pve-node:~# pve-bulk snapshot STABLE --all
 ct1001 : snapshot STABLE has succeeded
 ct1002 : snapshot STABLE has succeeded
 ct1003 : snapshot STABLE has succeeded

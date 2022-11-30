@@ -59,14 +59,6 @@ case "${arg_action}" in
     'shutdown')
         ;;
     'stop')
-        echo -e "\nStop will instantly terminate CTs/VMs, if possible use shutdown which will [possibly] start an ordered shutdown of services."
-	echo -n "Continue with stop? [y/N] "
-        read answer
-        if ! [[ "x$answer" == "xy" ]] && ! [[ "x$answer" == "xY" ]]
-	then
-            echo -e "\nStop aborted\n"
-            exit 0
-        fi
         ;;
     'status')
         ;;
@@ -109,6 +101,10 @@ do
         --vm-list=*)
             pve_vm_list="${arg_value}"
             ;;
+        --all)
+            pve_ct_list='all'
+            pve_vm_list='all'
+            ;;
         --help)
             opt_usage='yes'
             ;;
@@ -143,8 +139,9 @@ Actions:
 Options:
 
     --help
-    --ct-list={ctid,...}    ct list (defaults to none, specify all to select all CTs as with pct list)
-    --vm-list={vmid,...}    vm list (defaults to none, specify all to select all VMs as with qm list)
+    --ct-list={ctid,...}    ct list (defaults to 'none'; specify 'all' to select all CTs as with pct list)
+    --vm-list={vmid,...}    vm list (defaults to 'none'; specify 'all' to select all VMs as with qm list)
+    --all                   set ct-list and vm-list to 'all'
 
 Environment variables:
 
@@ -198,13 +195,11 @@ fi
 if [ "${pve_ct_list}" = 'not-set' ]
 then
     pve_ct_list="0"
+elif [ "${pve_ct_list}" = 'all' ]
+then
+    pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ print $1 }')
 else
-	if [ "${pve_ct_list}" = 'all' ]
-	then
-		pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ print $1 }')
-	else
-		pve_ct_list=$(echo "${pve_ct_list}" | tr ',' ' ')
-	fi
+    pve_ct_list=$(echo "${pve_ct_list}" | tr ',' ' ')
 fi
 
 # ----------------------------------------------------------------------------
@@ -214,13 +209,11 @@ fi
 if [ "${pve_vm_list}" = 'not-set' ]
 then
     pve_vm_list="0"
+elif [ "${pve_vm_list}" = 'all' ]
+then
+    pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ print $1 }')
 else
-	if [ "${pve_vm_list}" = 'all' ]
-	then
-		pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ print $1 }')
-	else
-		pve_vm_list=$(echo "${pve_vm_list}" | tr ',' ' ')
-	fi
+    pve_vm_list=$(echo "${pve_vm_list}" | tr ',' ' ')
 fi
 
 # ----------------------------------------------------------------------------
@@ -250,19 +243,19 @@ do
             status="${?}"
             ;;
         'ct:status')
-	    echo -n "ct${pve_ct_id}: "
+            echo -n "ct${pve_ct_id}: "
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}"
-	    status="${?}"
+            status="${?}"
             ;;
         'ct:listsnapshot')
-	    echo "ct${pve_ct_id}: "
+            echo "ct${pve_ct_id}:"
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}"
-	    status="${?}"
+            status="${?}"
             ;;
         'ct:snapshot')
             parameter1="${arg_snapname}"
             ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" "${parameter1}" > /dev/null 2>&1
-	    status="${?}"
+            status="${?}"
             ;;
         'ct:rollback')
             parameter1="${arg_snapname}"
@@ -286,9 +279,9 @@ do
     fi
     if [ "${parameter1:-not-set}" != 'not-set' ]
     then
-        echo "ct${pve_ct_id} : ${arg_action} ${parameter1} has ${result}"
+        echo "ct${pve_ct_id}: ${arg_action} ${parameter1} has ${result}"
     else
-        echo "ct${pve_ct_id} : ${arg_action} has ${result}"
+        echo "ct${pve_ct_id}: ${arg_action} has ${result}"
     fi
 done
 
@@ -319,12 +312,12 @@ do
             status="${?}"
             ;;
         'vm:status')
-	    echo -n "vm${pve_vm_id}: "
+            echo -n "vm${pve_vm_id}: "
             ${pve_vm_manager} "${arg_action}" "${pve_vm_id}"
             status="${?}"
             ;;
         'vm:listsnapshot')
-	    echo "vm${pve_vm_id}: "
+            echo "vm${pve_vm_id}:"
             ${pve_vm_manager} "${arg_action}" "${pve_vm_id}"
             status="${?}"
             ;;
@@ -356,9 +349,9 @@ do
     fi
     if [ "${parameter1:-not-set}" != 'not-set' ]
     then
-        echo "vm${pve_vm_id} : ${arg_action} ${parameter1} has ${result}"
+        echo "vm${pve_vm_id}: ${arg_action} ${parameter1} has ${result}"
     else
-        echo "vm${pve_vm_id} : ${arg_action} has ${result}"
+        echo "vm${pve_vm_id}: ${arg_action} has ${result}"
     fi
 done
 
