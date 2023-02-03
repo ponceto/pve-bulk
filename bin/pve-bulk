@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # pve-bulk - Copyright (c) 2018-2021 - Olivier Poncet
 #
@@ -323,8 +323,7 @@ do
             ;;
         'vm:snapshot')
             parameter1="${arg_snapname}"
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" "${parameter1}"
-            #${pve_vm_manager} "${arg_action}" "${pve_vm_id}" "${parameter1}" > /dev/null 2>&1
+            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" "${parameter1}" > /dev/null 2>&1
             status="${?}"
             ;;
         'vm:rollback')
