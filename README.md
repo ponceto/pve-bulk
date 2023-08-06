@@ -12,9 +12,9 @@ You can specify the CT list by providing the `--ct-list` command-line option or 
 
 You can specify the VM list by providing the `--vm-list` command-line option or by setting the `PVE_VM_LIST` environment variable.
 
-By default, CT/VM lists default to `none`, meaning that no CTs/VMs are selected. To specify all CTs/VMs pass `all` as parameter, like `--ct-list=all`.
+By default, CT/VM lists default to `none`, meaning that no CTs/VMs are selected. You can specify 'all', 'running' or 'stopped' to pass the list of all, running or stopped  CTs/VMs.
 
-You can specify `--all` to select all CT/VM.
+You can specify `--all`, '--running' or '--stopped' to automatically set the corresponding value for both '--ct-list' and '--vm-list' options.
 
 ## Installation
 
@@ -94,3 +94,16 @@ ct1001 : delsnapshot STABLE has succeeded
 ct1002 : delsnapshot STABLE has succeeded
 ct1003 : delsnapshot STABLE has succeeded
 ```
+
+Shutdown all running VMs:
+
+```
+pve-bulk shutdown --vm-list=running
+```
+
+Stop all running VMs/CTs:
+
+```
+pve-bulk stop --running
+```
+
