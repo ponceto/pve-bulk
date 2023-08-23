@@ -210,10 +210,10 @@ then
     pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ print $1 }')
 elif [ "${pve_ct_list}" = 'running' ]
 then
-    pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | grep 'running' | awk '{ print $1 }')
+    pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ if ($2 == "running") { print $1 } }')
 elif [ "${pve_ct_list}" = 'stopped' ]
 then
-    pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | grep 'stopped' | awk '{ print $1 }')
+    pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ if ($2 == "stopped") { print $1 } }')
 else
     pve_ct_list=$(echo "${pve_ct_list}" | tr ',' ' ')
 fi
@@ -230,10 +230,10 @@ then
     pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ print $1 }')
 elif [ "${pve_vm_list}" = 'running' ]
 then
-    pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | grep 'running' | awk '{ print $1 }')
+    pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ if ($3 == "running") { print $1 } }')
 elif [ "${pve_vm_list}" = 'stopped' ]
 then
-    pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | grep 'stopped' | awk '{ print $1 }')
+    pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ if ($3 == "stopped") { print $1 } }')
 else
     pve_vm_list=$(echo "${pve_vm_list}" | tr ',' ' ')
 fi
