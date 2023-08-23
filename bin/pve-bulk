@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# pve-bulk - Copyright (c) 2018-2021 - Olivier Poncet
+# pve-bulk - Copyright (c) 2018-2023 - Olivier Poncet
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ pve_ct_list="${PVE_CT_LIST:-not-set}"
 pve_vm_manager="${PVE_VM_MANAGER:-not-set}"
 pve_vm_list="${PVE_VM_LIST:-not-set}"
 pve_min_id='100'
-pve_max_id='9999'
+pve_max_id='1000000'
 
 # ----------------------------------------------------------------------------
 # parse the action
@@ -244,7 +244,7 @@ fi
 
 for pve_ct_id in ${pve_ct_list}
 do
-    if [ "${pve_ct_id}" -lt "${pve_min_id}" ] || [ "${pve_ct_id}" -gt "${pve_max_id}" ]
+    if [ "${pve_ct_id}" -lt "${pve_min_id}" ] || [ "${pve_ct_id}" -ge "${pve_max_id}" ]
     then
         continue
     fi
@@ -313,7 +313,7 @@ done
 
 for pve_vm_id in ${pve_vm_list}
 do
-    if [ "${pve_vm_id}" -lt "${pve_min_id}" ] || [ "${pve_vm_id}" -gt "${pve_max_id}" ]
+    if [ "${pve_vm_id}" -lt "${pve_min_id}" ] || [ "${pve_vm_id}" -ge "${pve_max_id}" ]
     then
         continue
     fi
