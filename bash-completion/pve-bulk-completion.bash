@@ -46,41 +46,30 @@ _pve_bulk_completion()
                         else
                             return
                         fi
-
-                    ####################################
-                    # Completions for --vm-list option #
-                    ####################################
-
-                    # If we have --vm-list= without any character after "=", return the available PVE_BULK_VM_* vars, if available, as suggestions
-                    elif [ "${#COMP_WORDS[@]}" == "4" ] && [ ${COMP_WORDS[2]} == "--vm-list" ] && [ ${COMP_WORDS[3]} == "=" ] ; then
-                        suggestions=($(compgen -W "${PVE_BULK_VM_VARS}" -P '$') $(compgen -W "running stopped"))
-                    elif [ "${#COMP_WORDS[@]}" == "7" ] && [ ${COMP_WORDS[5]} == "--vm-list" ] && [ ${COMP_WORDS[6]} == "=" ] ; then
-                        suggestions=($(compgen -W "${PVE_BULK_VM_VARS}" -P '$') $(compgen -W "running stopped"))
-
-                    # If we have --vm-list=XXX, return the available PVE_BULK_VM_* vars, if available, that have XXX as prefix
-                    elif [ "${#COMP_WORDS[@]}" == "5" ] && [ ${COMP_WORDS[2]} == "--vm-list" ] ; then
-                        suggestions=($(compgen -W "${PVE_BULK_VM_VARS}" -P '$' -- "${COMP_WORDS[4]##$}") $(compgen -W "running stopped" -- "${COMP_WORDS[4]##$}"))
-                    elif [ "${#COMP_WORDS[@]}" == "8" ] && [ ${COMP_WORDS[5]} == "--vm-list" ] ; then
-                        suggestions=($(compgen -W "${PVE_BULK_VM_VARS}" -P '$' -- "${COMP_WORDS[7]##$}") $(compgen -W "running stopped" -- "${COMP_WORDS[7]##$}"))
-
-                    ####################################
-                    # Completions for --ct-list option #
-                    ####################################
-
-                    # If we have --vm-list= without any character after "=", return the available PVE_BULK_CT_* vars, if available, as suggestions
-                    elif [ "${#COMP_WORDS[@]}" == "4" ] && [ ${COMP_WORDS[2]} == "--ct-list" ] && [ ${COMP_WORDS[3]} == "=" ] ; then
-                        suggestions=($(compgen -W "${PVE_BULK_CT_VARS}" -P '$') $(compgen -W "running stopped"))
-                    elif [ "${#COMP_WORDS[@]}" == "7" ] && [ ${COMP_WORDS[5]} == "--ct-list" ] && [ ${COMP_WORDS[6]} == "=" ] ; then
-                        suggestions=($(compgen -W "${PVE_BULK_CT_VARS}" -P '$') $(compgen -W "running stopped"))
-                 
-                    # If we have --vm-list=XXX, return the available PVE_BULK_CT_* vars, if available, that have XXX as prefix
-                    elif [ "${#COMP_WORDS[@]}" == "5" ] && [ ${COMP_WORDS[2]} == "--ct-list" ] ; then
-                        suggestions=($(compgen -W "${PVE_BULK_CT_VARS}" -P '$' -- "${COMP_WORDS[4]##$}") $(compgen -W "running stopped" -- "${COMP_WORDS[4]##$}"))
-                    elif [ "${#COMP_WORDS[@]}" == "8" ] && [ ${COMP_WORDS[5]} == "--ct-list" ] ; then
-                        suggestions=($(compgen -W "${PVE_BULK_CT_VARS}" -P '$' -- "${COMP_WORDS[7]##$}") $(compgen -W "running stopped" -- "${COMP_WORDS[7]##$}"))
                     else
-                        return
+                        for option in --vmlist --ctlist
+                        do
+                            #################################
+                            # Completions for active option #
+                            #################################
+        
+                            # If we have --vm-list= without any character after "=", return the available PVE_BULK_VM_* vars, if available, as suggestions
+                            elif [ "${#COMP_WORDS[@]}" == "4" ] && [ ${COMP_WORDS[2]} == "${option}" ] && [ ${COMP_WORDS[3]} == "=" ] ; then
+                                suggestions=($(compgen -W "${PVE_BULK_VM_VARS}" -P '$') $(compgen -W "running stopped"))
+                            elif [ "${#COMP_WORDS[@]}" == "7" ] && [ ${COMP_WORDS[5]} == "${option}" ] && [ ${COMP_WORDS[6]} == "=" ] ; then
+                                suggestions=($(compgen -W "${PVE_BULK_VM_VARS}" -P '$') $(compgen -W "running stopped"))
+        
+                            # If we have --vm-list=XXX, return the available PVE_BULK_VM_* vars, if available, that have XXX as prefix
+                            elif [ "${#COMP_WORDS[@]}" == "5" ] && [ ${COMP_WORDS[2]} == "${option}" ] ; then
+                                suggestions=($(compgen -W "${PVE_BULK_VM_VARS}" -P '$' -- "${COMP_WORDS[4]##$}") $(compgen -W "running stopped" -- "${COMP_WORDS[4]##$}"))
+                            elif [ "${#COMP_WORDS[@]}" == "8" ] && [ ${COMP_WORDS[5]} == "${option}" ] ; then
+                                suggestions=($(compgen -W "${PVE_BULK_VM_VARS}" -P '$' -- "${COMP_WORDS[7]##$}") $(compgen -W "running stopped" -- "${COMP_WORDS[7]##$}"))
+                        done
                     fi
+                fi
+                
+                if [ -z $suggestions ] ; then
+                    return
                 fi
             ;;
             
