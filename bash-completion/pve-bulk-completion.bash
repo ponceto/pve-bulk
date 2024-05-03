@@ -12,8 +12,8 @@ PVE_BULK_OPTIONS="--ct-list= --vm-list= --all --stopped --running"
 _pve_bulk_completion()
 {
     # Retrieve environment variables with lists of VMs and CTs
-    PVE_BULK_VM_VARS=$(env | grep PVE_BULK_VM_ | cut -d= -f 1)
-    PVE_BULK_CT_VARS=$(env | grep PVE_BULK_CT_ | cut -d= -f 1)
+    PVE_BULK_VM_VARS=$(env | grep PVB_VM_ | cut -d= -f 1)
+    PVE_BULK_CT_VARS=$(env | grep PVB_CT_ | cut -d= -f 1)
 
     local suggestions=""
     
