@@ -56,46 +56,46 @@ removed '/etc/bash_completion.d/pve-bulk-completion'
 
 ## Completion examples
 
-Follow some examples of how pressing <TAB> (double <TAB> if there are multiple options) triggers pve-bulk bash completion:
+Follow some examples of how pressing [TAB] (double [TAB] if there are multiple options) triggers pve-bulk bash completion:
 
 ```bash
-$ pve-bulk <TAB><TAB>
+$ pve-bulk [TAB][TAB]
 delsnapshot   help          rollback      snapshot      status
 --help        listsnapshot  shutdown      start         stop
 
-$ pve-bulk st<TAB><TAB>
+$ pve-bulk st[TAB][TAB]
 start   status  stop
 
 # The following expands the command on the same line
-$ pve-bulk sn<TAB><TAB>
+$ pve-bulk sn[TAB][TAB]
 # producing the following
 $ pve-bulk snapshot
 
 # The following triggers a suggestion to specify a snapshot name, you can delete it and enter the desired name
-$ pve-bulk snapshot <TAB>
+$ pve-bulk snapshot [TAB]
 $ pve-bulk snapshot SNAP_NAME
-$ pve-bulk snapshot my-snapshot --<TAB><TAB>
+$ pve-bulk snapshot my-snapshot --[TAB][TAB]
 --all       --ct-list=  --running   --stopped   --vm-list=
 
 # If we specify --vm-list then the completion scripts looks for environment variables starting with PVB_VM_
-$ pve-bulk snapshot my-snapshot --vm-list=<TAB><TAB>
+$ pve-bulk snapshot my-snapshot --vm-list=[TAB][TAB]
 $PVB_VM_CEPH   $PVB_VM_DEVEL     running        stopped
-$ pve-bulk snapshot my-snapshot --vm-list=$P<TAB>
-$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_<TAB><TAB>
+$ pve-bulk snapshot my-snapshot --vm-list=$P[TAB]
+$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_[TAB][TAB]
 $PVB_VM_CEPH   $PVB_VM_DEVEL
-$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_D<TAB>
+$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_D[TAB]
 $ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_DEVEL
 
-# We can press <TAB> after --vm-list=xxx the completion immediately completes with --ct-list which is the only other
+# We can press [TAB] after --vm-list=xxx the completion immediately completes with --ct-list which is the only other
 # valid option after --vm-list. It works vice versa too.
-$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_DEVEL <TAB>
-$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_DEVEL --ct-list=<TAB><TAB>
+$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_DEVEL [TAB]
+$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_DEVEL --ct-list=[TAB][TAB]
 $PVB_CT_PROD   $PVB_CT_TEST      running        stopped
-$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_DEVEL --ct-list=r<TAB>
+$ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_DEVEL --ct-list=r[TAB]
 $ pve-bulk snapshot my-snapshot --vm-list=$PVB_VM_DEVEL --ct-list=running
 
-$ pve-bulk listsnapshot --<TAB><TAB>
+$ pve-bulk listsnapshot --[TAB][TAB]
 --all       --ct-list=  --running   --stopped   --vm-list=
-$ pve-bulk listsnapshot --a<TAB>
+$ pve-bulk listsnapshot --a[TAB]
 $ pve-bulk listsnapshot --all
 ```
