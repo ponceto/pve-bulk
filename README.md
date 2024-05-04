@@ -1,10 +1,10 @@
-# Bulk actions for Proxmox VE
+# BULK ACTIONS FOR PROXMOX VE
 
-## Abstract
+## ABSTRACT
 
 `pve-bulk` is a utility script for the [Proxmox VE](https://www.proxmox.com) hypervisor, which is designed to perform some CT/VM bulk actions.
 
-## Description
+## DESCRIPTION
 
 This script will execute the given action on each container and each virtual machine specified int the command-line.
 
@@ -16,35 +16,51 @@ By default, CT/VM lists default to `none`, meaning that no CTs/VMs are selected.
 
 You can specify `--all`, `--running` or `--stopped` as a shortcut to set the corresponding value for both `--ct-list` and `--vm-list` options.
 
-## Install
+## HOWTO
+
+### Install
 
 If you have `make` on your system:
 
-```
+```bash
 make install
 ```
 
 If you don't have `make` on your system:
 
-```
+```bash
 ./utils/install.sh
 ```
 
-## Uninstall
+### Uninstall
 
 If you have `make` on your system:
 
-```
+```bash
 make uninstall
 ```
 
 If you don't have `make` on your system:
 
-```
+```bash
 ./utils/uninstall.sh
 ```
 
-## Usage
+### Build Debian package
+
+If you have `make` on your system you can build a debian package:
+
+```bash
+make buildpackage
+```
+
+Then you can install the resulting debian package on your target PVE node:
+
+```bash
+apt install ./pve-bulk_X.X.X-X_amd64.deb
+```
+
+## USAGE
 
 ```
 Usage: pve-bulk [ACTION [PARAMETERS]] [OPTIONS]
@@ -79,45 +95,34 @@ Environment variables:
 
 ```
 
-## Examples
+## EXAMPLES
 
 Create the snapshot named `STABLE` on each CT/VM:
 
-```
-root@pve-node:~# pve-bulk snapshot STABLE --all
-ct1001 : snapshot STABLE has succeeded
-ct1002 : snapshot STABLE has succeeded
-ct1003 : snapshot STABLE has succeeded
-vm1101 : snapshot STABLE has succeeded
-vm1102 : snapshot STABLE has succeeded
-vm1103 : snapshot STABLE has succeeded
+```bash
+pve-bulk snapshot STABLE --all
 ```
 
 Rollback the snapshot named `STABLE` on VM 1101 and 1102 but not on CT:
 
-```
-root@pve-node:~# pve-bulk rollback STABLE --vm-list=1101,1102
-vm1101 : rollback STABLE has succeeded
-vm1102 : rollback STABLE has succeeded
+```bash
+pve-bulk rollback STABLE --vm-list=1101,1102
 ```
 
 Delete the snapshot named `STABLE` on each CT but not on VM:
 
-```
-root@pve-node:~# pve-bulk delsnapshot STABLE --ct-list=all
-ct1001 : delsnapshot STABLE has succeeded
-ct1002 : delsnapshot STABLE has succeeded
-ct1003 : delsnapshot STABLE has succeeded
+```bash
+pve-bulk delsnapshot STABLE --ct-list=all
 ```
 
 Shutdown all running VMs:
 
-```
+```bash
 pve-bulk shutdown --vm-list=running
 ```
 
 Stop all running VMs/CTs:
 
-```
+```bash
 pve-bulk stop --running
 ```

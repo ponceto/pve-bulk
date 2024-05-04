@@ -19,9 +19,7 @@
 # global targets
 # ----------------------------------------------------------------------------
 
-all : build
-
-build : build_pve_bulk
+all : all_pve_bulk
 	@echo "=== $@ ok ==="
 
 clean : clean_pve_bulk
@@ -33,11 +31,15 @@ install : install_pve_bulk
 uninstall : uninstall_pve_bulk
 	@echo "=== $@ ok ==="
 
+buildpackage :
+	dpkg-buildpackage -b --no-sign
+	@echo "=== $@ ok ==="
+
 # ----------------------------------------------------------------------------
-# build pve-bulk
+# all pve-bulk
 # ----------------------------------------------------------------------------
 
-build_pve_bulk :
+all_pve_bulk :
 	@true
 
 # ----------------------------------------------------------------------------
