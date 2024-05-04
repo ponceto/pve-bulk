@@ -16,19 +16,32 @@ By default, CT/VM lists default to `none`, meaning that no CTs/VMs are selected.
 
 You can specify `--all`, `--running` or `--stopped` as a shortcut to set the corresponding value for both `--ct-list` and `--vm-list` options.
 
-## Installation
+## Install
 
-Clone the repository in the `/opt/pve-bulk` directory on your PVE node:
-
-```
-git clone {repository-url} /opt/pve-bulk
-```
-
-Then create a symbolic link into the `/usr/local/bin` directory:
+If you have `make` on your system:
 
 ```
-cd /usr/local/bin
-ln -sf ../../../opt/pve-bulk/bin/pve-bulk ./pve-bulk
+make install
+```
+
+If you don't have `make` on your system:
+
+```
+./utils/install.sh
+```
+
+## Uninstall
+
+If you have `make` on your system:
+
+```
+make uninstall
+```
+
+If you don't have `make` on your system:
+
+```
+./utils/uninstall.sh
 ```
 
 ## Usage
