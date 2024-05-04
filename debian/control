@@ -1,0 +1,14 @@
+Source: pve-bulk
+Section: admin
+Priority: optional
+Maintainer: Olivier Poncet <ponceto@free.fr>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Homepage: https://www.emaxilde.net/
+Rules-Requires-Root: no
+
+Package: pve-bulk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Bulk actions for Proxmox VE
+ pve-bulk is a utility script for the Proxmox VE hypervisor, which is designed to perform some CT/VM bulk actions.
