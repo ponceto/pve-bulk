@@ -20,13 +20,13 @@ You can specify `--all`, `--running` or `--stopped` as a shortcut to set the cor
 
 If you have `make` on your system:
 
-```
+```bash
 make install
 ```
 
 If you don't have `make` on your system:
 
-```
+```bash
 ./utils/install.sh
 ```
 
@@ -34,19 +34,19 @@ If you don't have `make` on your system:
 
 If you have `make` on your system:
 
-```
+```bash
 make uninstall
 ```
 
 If you don't have `make` on your system:
 
-```
+```bash
 ./utils/uninstall.sh
 ```
 
 ## Usage
 
-```
+```bash
 Usage: pve-bulk [ACTION [PARAMETERS]] [OPTIONS]
 
 Actions:
@@ -83,7 +83,7 @@ Environment variables:
 
 Create the snapshot named `STABLE` on each CT/VM:
 
-```
+```bash
 root@pve-node:~# pve-bulk snapshot STABLE --all
 ct1001 : snapshot STABLE has succeeded
 ct1002 : snapshot STABLE has succeeded
@@ -95,7 +95,7 @@ vm1103 : snapshot STABLE has succeeded
 
 Rollback the snapshot named `STABLE` on VM 1101 and 1102 but not on CT:
 
-```
+```bash
 root@pve-node:~# pve-bulk rollback STABLE --vm-list=1101,1102
 vm1101 : rollback STABLE has succeeded
 vm1102 : rollback STABLE has succeeded
@@ -103,7 +103,7 @@ vm1102 : rollback STABLE has succeeded
 
 Delete the snapshot named `STABLE` on each CT but not on VM:
 
-```
+```bash
 root@pve-node:~# pve-bulk delsnapshot STABLE --ct-list=all
 ct1001 : delsnapshot STABLE has succeeded
 ct1002 : delsnapshot STABLE has succeeded
@@ -112,12 +112,12 @@ ct1003 : delsnapshot STABLE has succeeded
 
 Shutdown all running VMs:
 
-```
+```bash
 pve-bulk shutdown --vm-list=running
 ```
 
 Stop all running VMs/CTs:
 
-```
+```bash
 pve-bulk stop --running
 ```
