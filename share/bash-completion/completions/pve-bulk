@@ -11,12 +11,12 @@ _pve_bulk_completion()
     PVE_BULK_CT_VARS=$(env | grep PVB_CT_ | cut -d= -f 1)
 
     local suggestions=""
-    
+
     if [ "${#COMP_WORDS[@]}" == "2" ]; then
         # Complete actions at the beginning of the command
         suggestions=($(compgen -W "${PVE_BULK_ACTIONS}" -- "${COMP_WORDS[1]}" ))
     elif [ "${#COMP_WORDS[@]}" -ge "2" ]; then
-        # Complete options for specific actions 
+        # Complete options for specific actions
         ACTION_TYPE="STOP_COMPLETION"
         case ${COMP_WORDS[1]} in
             "snapshot" | "rollback" | "delsnapshot")
@@ -39,7 +39,7 @@ _pve_bulk_completion()
                     # have the same processing as listsnapshot and similar options without the need to enter a snapshot name
                     COMP_WORDS=("${COMP_WORDS[@]:1}")
                 fi
-                
+
                 if [ "${#COMP_WORDS[@]}" == "3" ] ; then
                     # Suggest all the options if this is the first option after the action
                     suggestions=($(compgen -W "${PVE_BULK_OPTIONS}" -- "${COMP_WORDS[2]}"))
@@ -48,7 +48,7 @@ _pve_bulk_completion()
                     if [ ${COMP_WORDS[2]} == "--vm-list" ] ; then
                         suggestions=($(compgen -W "--ct-list=" -- "${COMP_WORDS[5]}"))
                     elif [ ${COMP_WORDS[2]} == "--ct-list" ] ; then
-                        suggestions=($(compgen -W "--vm-list=" -- "${COMP_WORDS[5]}")) 
+                        suggestions=($(compgen -W "--vm-list=" -- "${COMP_WORDS[5]}"))
                     else
                         return
                     fi
@@ -80,13 +80,13 @@ _pve_bulk_completion()
                     done
                 fi
             fi
-            
+
             if [ -z $suggestions ] ; then
                 return
             fi
         fi
     fi
-    
+
     COMPREPLY=("${suggestions[@]}")
 }
 
