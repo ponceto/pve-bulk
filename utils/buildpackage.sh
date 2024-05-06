@@ -1,5 +1,6 @@
+#!/bin/sh
 #
-# Makefile - Copyright (c) 2018-2024 - Olivier Poncet
+# buildpackage.sh - Copyright (c) 2018-2024 - Olivier Poncet
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,32 +13,20 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 
 # ----------------------------------------------------------------------------
-# global targets
+# debug
 # ----------------------------------------------------------------------------
 
-all :
-	@true
-	@echo "=== $@ ok ==="
+set -x
 
-clean :
-	@true
-	@echo "=== $@ ok ==="
+# ----------------------------------------------------------------------------
+# build debian package
+# ----------------------------------------------------------------------------
 
-install :
-	@./utils/install.sh
-	@echo "=== $@ ok ==="
-
-uninstall :
-	@./utils/uninstall.sh
-	@echo "=== $@ ok ==="
-
-buildpackage :
-	@./utils/buildpackage.sh
-	@echo "=== $@ ok ==="
+dpkg-buildpackage -b --no-sign                                       || exit 1
 
 # ----------------------------------------------------------------------------
 # End-Of-File

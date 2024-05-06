@@ -56,7 +56,7 @@ removed '/etc/bash_completion.d/pve-bulk-completion'
 
 ## Completion examples
 
-Follow some examples of how pressing <TAB> (double <TAB> if there are multiple options) triggers pve-bulk bash completion:
+Follow some examples of how pressing `<TAB>` (double `<TAB>` if there are multiple options) triggers pve-bulk bash completion:
 
 ```bash
 $ pve-bulk <TAB><TAB>
