@@ -19,23 +19,23 @@
 # global targets
 # ----------------------------------------------------------------------------
 
-all :
+all:
 	@true
 	@echo "=== $@ ok ==="
 
-clean :
+clean:
 	@true
 	@echo "=== $@ ok ==="
 
-install :
+install:
 	@./utils/install.sh
 	@echo "=== $@ ok ==="
 
-uninstall :
+uninstall:
 	@./utils/uninstall.sh
 	@echo "=== $@ ok ==="
 
-buildpackage :
+buildpackage:
 	@./utils/buildpackage.sh
 	@echo "=== $@ ok ==="
 

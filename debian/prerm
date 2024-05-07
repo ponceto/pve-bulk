@@ -13,19 +13,15 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-# ----------------------------------------------------------------------------
 # summary of how this script can be called:
-#        * <prerm> `remove'
-#        * <old-prerm> `upgrade' <new-version>
-#        * <new-prerm> `failed-upgrade' <old-version>
-#        * <conflictor's-prerm> `remove' `in-favour' <package> <new-version>
-#        * <deconfigured's-prerm> `deconfigure' `in-favour'
-#          <package-being-installed> <version> `removing'
-#          <conflicting-package> <version>
-# ----------------------------------------------------------------------------
+#
+# <prerm> `remove'
+# <old-prerm> `upgrade' <new-version>
+# <new-prerm> `failed-upgrade' <old-version>
+# <conflictor's-prerm> `remove' `in-favour' <package> <new-version>
+# <deconfigured's-prerm> `deconfigure' `in-favour' <package-being-installed> <version> `removing' <conflicting-package> <version>
 
 # ----------------------------------------------------------------------------
 # abort on error
@@ -34,16 +30,53 @@
 set -e
 
 # ----------------------------------------------------------------------------
-# prerm
+# variables
 # ----------------------------------------------------------------------------
 
-echo "pve-bulk: prerm ${*}"
+arg_command="${1}"
 
 # ----------------------------------------------------------------------------
-# exit
+# remove
 # ----------------------------------------------------------------------------
 
-exit 0
+if [ "${arg_command}" = 'remove' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# upgrade
+# ----------------------------------------------------------------------------
+
+if [ "${arg_command}" = 'upgrade' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# deconfigure
+# ----------------------------------------------------------------------------
+
+if [ "${arg_command}" = 'deconfigure' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# failed-upgrade
+# ----------------------------------------------------------------------------
+
+if [ "${arg_command}" = 'failed-upgrade' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# unknown argument
+# ----------------------------------------------------------------------------
+
+echo "prerm: unknown argument '${arg_command}'" >&2
+exit 1
 
 # ----------------------------------------------------------------------------
 # End-Of-File

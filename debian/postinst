@@ -13,20 +13,15 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-# ----------------------------------------------------------------------------
 # summary of how this script can be called:
-#        * <postinst> `configure' <most-recently-configured-version>
-#        * <old-postinst> `abort-upgrade' <new version>
-#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
-#          <new-version>
-#        * <postinst> `abort-remove'
-#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
-#          <failed-install-package> <version> `removing'
-#          <conflicting-package> <version>
-# ----------------------------------------------------------------------------
+#
+# <postinst> `configure' <most-recently-configured-version>
+# <old-postinst> `abort-upgrade' <new version>
+# <conflictor's-postinst> `abort-remove' `in-favour' <package> <new-version>
+# <postinst> `abort-remove'
+# <deconfigured's-postinst> `abort-deconfigure' `in-favour' <failed-install-package> <version> `removing' <conflicting-package> <version>
 
 # ----------------------------------------------------------------------------
 # abort on error
@@ -35,16 +30,53 @@
 set -e
 
 # ----------------------------------------------------------------------------
-# postinst
+# variables
 # ----------------------------------------------------------------------------
 
-echo "pve-bulk: postinst ${*}"
+arg_command="${1}"
 
 # ----------------------------------------------------------------------------
-# exit
+# configure
 # ----------------------------------------------------------------------------
 
-exit 0
+if [ "${arg_command}" = 'configure' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# abort-upgrade
+# ----------------------------------------------------------------------------
+
+if [ "${arg_command}" = 'abort-upgrade' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# abort-remove
+# ----------------------------------------------------------------------------
+
+if [ "${arg_command}" = 'abort-remove' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# abort-deconfigure
+# ----------------------------------------------------------------------------
+
+if [ "${arg_command}" = 'abort-deconfigure' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# unknown argument
+# ----------------------------------------------------------------------------
+
+echo "postinst: unknown argument '${arg_command}'" >&2
+exit 1
 
 # ----------------------------------------------------------------------------
 # End-Of-File

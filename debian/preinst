@@ -13,16 +13,14 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-# ----------------------------------------------------------------------------
 # summary of how this script can be called:
-#        * <new-preinst> `install'
-#        * <new-preinst> `install' <old-version>
-#        * <new-preinst> `upgrade' <old-version>
-#        * <old-preinst> `abort-upgrade' <new-version>
-# ----------------------------------------------------------------------------
+#
+# <new-preinst> `install'
+# <new-preinst> `install' <old-version>
+# <new-preinst> `upgrade' <old-version>
+# <old-preinst> `abort-upgrade' <new-version>
 
 # ----------------------------------------------------------------------------
 # abort on error
@@ -31,16 +29,44 @@
 set -e
 
 # ----------------------------------------------------------------------------
-# preinst
+# variables
 # ----------------------------------------------------------------------------
 
-echo "pve-bulk: preinst ${*}"
+arg_command="${1}"
 
 # ----------------------------------------------------------------------------
-# exit
+# install
 # ----------------------------------------------------------------------------
 
-exit 0
+if [ "${arg_command}" = 'install' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# upgrade
+# ----------------------------------------------------------------------------
+
+if [ "${arg_command}" = 'upgrade' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# abort-upgrade
+# ----------------------------------------------------------------------------
+
+if [ "${arg_command}" = 'abort-upgrade' ]
+then
+    exit 0
+fi
+
+# ----------------------------------------------------------------------------
+# unknown argument
+# ----------------------------------------------------------------------------
+
+echo "preinst: unknown argument '${arg_command}'" >&2
+exit 1
 
 # ----------------------------------------------------------------------------
 # End-Of-File
