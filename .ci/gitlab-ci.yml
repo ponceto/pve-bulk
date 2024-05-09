@@ -40,6 +40,8 @@ build-deb_amd64:
   artifacts:
     name: "pve-bulk-deb_amd64"
     paths:
+      - ./*.buildinfo
+      - ./*.changes
       - ./*.deb
 
 # ----------------------------------------------------------------------------
@@ -60,6 +62,8 @@ build-deb_arm64:
   artifacts:
     name: "pve-bulk-deb_arm64"
     paths:
+      - ./*.buildinfo
+      - ./*.changes
       - ./*.deb
 
 # ----------------------------------------------------------------------------
