@@ -17,28 +17,38 @@
 #
 
 # ----------------------------------------------------------------------------
-# command-line constants
-# ----------------------------------------------------------------------------
-
-arg_script=$(basename "${0:-not-set}")
-arg_action='not-set'
-arg_snapname='not-set'
-opt_usage='no'
-opt_error='no'
-
-# ----------------------------------------------------------------------------
 # pve constants
 # ----------------------------------------------------------------------------
 
-pve_ct_manager="${PVE_CT_MANAGER:-not-set}"
-pve_ct_list="${PVE_CT_LIST:-not-set}"
-pve_vm_manager="${PVE_VM_MANAGER:-not-set}"
-pve_vm_list="${PVE_VM_LIST:-not-set}"
-pve_min_id='100'
-pve_max_id='1000000'
+pve_ct_manager="${PVE_CT_MANAGER:-/usr/sbin/pct}"
+pve_vm_manager="${PVE_VM_MANAGER:-/usr/sbin/qm}"
+pve_lower_id='100'
+pve_upper_id='1000000'
 
 # ----------------------------------------------------------------------------
-# parse the action
+# command-line arguments
+# ----------------------------------------------------------------------------
+
+arg_program='pve-bulk'
+arg_action='not-set'
+arg_snapname='not-set'
+arg_ct_list="${PVE_CT_LIST:-not-set}"
+arg_vm_list="${PVE_VM_LIST:-not-set}"
+arg_usage='no'
+arg_debug='no'
+arg_error='no'
+
+# ----------------------------------------------------------------------------
+# get the program name
+# ----------------------------------------------------------------------------
+
+if [ "${0:-not-set}" != 'not-set' ]
+then
+    arg_program="${0}"
+fi
+
+# ----------------------------------------------------------------------------
+# parse the <action> positional argument
 # ----------------------------------------------------------------------------
 
 if [ "${#}" -gt '0' ]
@@ -48,7 +58,7 @@ then
 fi
 
 # ----------------------------------------------------------------------------
-# parse the positional parameters
+# parse the positional arguments
 # ----------------------------------------------------------------------------
 
 case "${arg_action}" in
@@ -72,11 +82,11 @@ case "${arg_action}" in
         fi
         if [ "${arg_snapname}" = 'not-set' ]
         then
-            opt_error='yes'
+            arg_error='yes'
         fi
         ;;
     *)
-        opt_error='yes'
+        arg_error='yes'
         ;;
 esac
 
@@ -96,28 +106,35 @@ do
     esac
     case "${1}" in
         --ct-list=*)
-            pve_ct_list="${arg_value}"
+            arg_ct_list="${arg_value}"
             ;;
         --vm-list=*)
-            pve_vm_list="${arg_value}"
+            arg_vm_list="${arg_value}"
             ;;
         --all)
-            pve_ct_list='all'
-            pve_vm_list='all'
+            arg_ct_list='all'
+            arg_vm_list='all'
             ;;
         --running)
-            pve_ct_list='running'
-            pve_vm_list='running'
+            arg_ct_list='running'
+            arg_vm_list='running'
             ;;
         --stopped)
-            pve_ct_list='stopped'
-            pve_vm_list='stopped'
+            arg_ct_list='stopped'
+            arg_vm_list='stopped'
             ;;
         --help)
-            opt_usage='yes'
+            arg_usage='yes'
+            ;;
+        --debug)
+            arg_debug='yes'
+            ;;
+        --debug=*)
+            arg_debug="${arg_value}"
             ;;
         *)
-            opt_error='yes'
+            echo "error: unsupported option [${1}]"
+            exit 1
             ;;
     esac
     shift
@@ -127,10 +144,10 @@ done
 # display help if needed
 # ----------------------------------------------------------------------------
 
-if [ "${arg_action}" = 'help' ] || [ "${opt_usage}" = 'yes' ] || [ "${opt_error}" = 'yes' ]
+if [ "${arg_action}" = 'help' ] || [ "${arg_usage}" = 'yes' ] || [ "${arg_error}" = 'yes' ]
 then
     cat << ____EOF
-Usage: ${arg_script} [ACTION [PARAMETERS]] [OPTIONS]
+Usage: ${arg_program} [ACTION [PARAMETERS]] [OPTIONS]
 
 Actions:
 
@@ -146,22 +163,26 @@ Actions:
 
 Options:
 
-    --help
-    --ct-list={ctid,...}    ct list (defaults to 'none'; specify 'all' to select all CTs as with pct list, 'running' to select all running CTs or 'stopped' to select all stopped CTs)
-    --vm-list={vmid,...}    vm list (defaults to 'none'; specify 'all' to select all VMs as with qm list, 'running' to select all running CTs or 'stopped' to select all stopped VMs)
-    --all                   set ct-list and vm-list to 'all'
-    --running               set ct-list and vm-list to 'running'
-    --stopped               set ct-list and vm-list to 'stopped'
+    --ct-list={ctid,...}        ct list (defaults to 'none'; specify 'all' to select all CTs as with pct list, 'running' to select all running CTs or 'stopped' to select all stopped CTs)
+    --vm-list={vmid,...}        vm list (defaults to 'none'; specify 'all' to select all VMs as with qm list, 'running' to select all running CTs or 'stopped' to select all stopped VMs)
+    --all                       set ct-list and vm-list to 'all'
+    --running                   set ct-list and vm-list to 'running'
+    --stopped                   set ct-list and vm-list to 'stopped'
+
+Special options:
+
+    --help                      display this help and exit
+    --debug[={yes|no}]          enable/disable the debug mode
 
 Environment variables:
 
-    PVE_CT_MANAGER          ct manager (defaults to pct)
-    PVE_CT_LIST             ct list    (defaults to pct list)
-    PVE_VM_MANAGER          vm manager (defaults to qm)
-    PVE_VM_LIST             vm list    (defaults to qm list)
+    PVE_CT_MANAGER              ct manager (defaults to pct)
+    PVE_CT_LIST                 ct list    (defaults to pct list)
+    PVE_VM_MANAGER              vm manager (defaults to qm)
+    PVE_VM_LIST                 vm list    (defaults to qm list)
 
 ____EOF
-    if [ "${opt_error}" = 'yes' ]
+    if [ "${arg_error}" = 'yes' ]
     then
         exit 1
     fi
@@ -169,124 +190,103 @@ ____EOF
 fi
 
 # ----------------------------------------------------------------------------
-# pve_ct_manager
+# enable the debug mode if requested
 # ----------------------------------------------------------------------------
 
-if [ "${pve_ct_manager}" = 'not-set' ]
+if [ "${arg_debug}" = 'yes' ]
 then
-    pve_ct_manager="$(which pct || echo 'not-found')"
-fi
-
-if [ "${pve_ct_manager}" = 'not-found' ]
-then
-    echo '*** pve_ct_manager was not found ***'
-    exit 1
+    set -x
 fi
 
 # ----------------------------------------------------------------------------
-# pve_vm_manager
+# arg_ct_list
 # ----------------------------------------------------------------------------
 
-if [ "${pve_vm_manager}" = 'not-set' ]
+if [ "${arg_ct_list}" = 'not-set' ]
 then
-    pve_vm_manager="$(which qm || echo 'not-found')"
-fi
-
-if [ "${pve_vm_manager}" = 'not-found' ]
+    arg_ct_list="0"
+elif [ "${arg_ct_list}" = 'all' ]
 then
-    echo '*** pve_vm_manager was not found ***'
-    exit 1
-fi
-
-# ----------------------------------------------------------------------------
-# pve_ct_list
-# ----------------------------------------------------------------------------
-
-if [ "${pve_ct_list}" = 'not-set' ]
+    arg_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ print $1 }')
+elif [ "${arg_ct_list}" = 'running' ]
 then
-    pve_ct_list="0"
-elif [ "${pve_ct_list}" = 'all' ]
+    arg_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ if ($2 == "running") { print $1 } }')
+elif [ "${arg_ct_list}" = 'stopped' ]
 then
-    pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ print $1 }')
-elif [ "${pve_ct_list}" = 'running' ]
-then
-    pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ if ($2 == "running") { print $1 } }')
-elif [ "${pve_ct_list}" = 'stopped' ]
-then
-    pve_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ if ($2 == "stopped") { print $1 } }')
+    arg_ct_list=$(${pve_ct_manager} list | grep -v 'VMID' | awk '{ if ($2 == "stopped") { print $1 } }')
 else
-    pve_ct_list=$(echo "${pve_ct_list}" | tr ',' ' ')
+    arg_ct_list=$(echo "${arg_ct_list}" | tr ',' ' ')
 fi
 
 # ----------------------------------------------------------------------------
-# pve_vm_list
+# arg_vm_list
 # ----------------------------------------------------------------------------
 
-if [ "${pve_vm_list}" = 'not-set' ]
+if [ "${arg_vm_list}" = 'not-set' ]
 then
-    pve_vm_list="0"
-elif [ "${pve_vm_list}" = 'all' ]
+    arg_vm_list="0"
+elif [ "${arg_vm_list}" = 'all' ]
 then
-    pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ print $1 }')
-elif [ "${pve_vm_list}" = 'running' ]
+    arg_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ print $1 }')
+elif [ "${arg_vm_list}" = 'running' ]
 then
-    pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ if ($3 == "running") { print $1 } }')
-elif [ "${pve_vm_list}" = 'stopped' ]
+    arg_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ if ($3 == "running") { print $1 } }')
+elif [ "${arg_vm_list}" = 'stopped' ]
 then
-    pve_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ if ($3 == "stopped") { print $1 } }')
+    arg_vm_list=$(${pve_vm_manager} list | grep -v 'VMID' | awk '{ if ($3 == "stopped") { print $1 } }')
 else
-    pve_vm_list=$(echo "${pve_vm_list}" | tr ',' ' ')
+    arg_vm_list=$(echo "${arg_vm_list}" | tr ',' ' ')
 fi
 
 # ----------------------------------------------------------------------------
 # ct:actions
 # ----------------------------------------------------------------------------
 
-for pve_ct_id in ${pve_ct_list}
+for arg_ct_id in ${arg_ct_list}
 do
-    if [ "${pve_ct_id}" -lt "${pve_min_id}" ] || [ "${pve_ct_id}" -ge "${pve_max_id}" ]
+    if [ "${arg_ct_id}" -lt "${pve_lower_id}" ] || [ "${arg_ct_id}" -ge "${pve_upper_id}" ]
     then
         continue
     fi
     case "ct:${arg_action}" in
         'ct:start')
             parameter1=""
-            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" > /dev/null 2>&1
+            ${pve_ct_manager} "${arg_action}" "${arg_ct_id}" > /dev/null 2>&1
             status="${?}"
             ;;
         'ct:shutdown')
             parameter1=""
-            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" > /dev/null 2>&1
+            ${pve_ct_manager} "${arg_action}" "${arg_ct_id}" > /dev/null 2>&1
             status="${?}"
             ;;
         'ct:stop')
             parameter1=""
-            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" > /dev/null 2>&1
+            ${pve_ct_manager} "${arg_action}" "${arg_ct_id}" > /dev/null 2>&1
             status="${?}"
             ;;
         'ct:status')
-            echo -n "ct${pve_ct_id}: "
-            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}"
+            echo -n "ct${arg_ct_id}: "
+            ${pve_ct_manager} "${arg_action}" "${arg_ct_id}"
             status="${?}"
             ;;
         'ct:listsnapshot')
-            echo "ct${pve_ct_id}:"
-            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}"
+            echo "ct${arg_ct_id}:"
+            ${pve_ct_manager} "${arg_action}" "${arg_ct_id}"
             status="${?}"
             ;;
         'ct:snapshot')
             parameter1="${arg_snapname}"
-            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" "${parameter1}" > /dev/null 2>&1
+            ${pve_ct_manager} "${arg_action}" "${arg_ct_id}" "${parameter1}" > /dev/null 2>&1
             status="${?}"
             ;;
         'ct:rollback')
             parameter1="${arg_snapname}"
-            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" "${parameter1}" > /dev/null 2>&1
+            ${pve_ct_manager} "${arg_action}" "${arg_ct_id}" "${parameter1}" > /dev/null 2>&1
             status="${?}"
             ;;
         'ct:delsnapshot')
             parameter1="${arg_snapname}"
-            ${pve_ct_manager} "${arg_action}" "${pve_ct_id}" "${parameter1}" > /dev/null 2>&1
+            ${pve_ct_manager} "${arg_action}" "${arg_ct_id}" "${parameter1}" > /dev/null 2>&1
             status="${?}"
             ;;
         *)
@@ -301,9 +301,9 @@ do
     fi
     if [ "${parameter1:-not-set}" != 'not-set' ]
     then
-        echo "ct${pve_ct_id}: ${arg_action} ${parameter1} has ${result}"
+        echo "ct${arg_ct_id}: ${arg_action} ${parameter1} has ${result}"
     else
-        echo "ct${pve_ct_id}: ${arg_action} has ${result}"
+        echo "ct${arg_ct_id}: ${arg_action} has ${result}"
     fi
 done
 
@@ -311,51 +311,51 @@ done
 # vm:actions
 # ----------------------------------------------------------------------------
 
-for pve_vm_id in ${pve_vm_list}
+for arg_vm_id in ${arg_vm_list}
 do
-    if [ "${pve_vm_id}" -lt "${pve_min_id}" ] || [ "${pve_vm_id}" -ge "${pve_max_id}" ]
+    if [ "${arg_vm_id}" -lt "${pve_lower_id}" ] || [ "${arg_vm_id}" -ge "${pve_upper_id}" ]
     then
         continue
     fi
     case "vm:${arg_action}" in
         'vm:start')
             parameter1=""
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" > /dev/null 2>&1
+            ${pve_vm_manager} "${arg_action}" "${arg_vm_id}" > /dev/null 2>&1
             status="${?}"
             ;;
         'vm:shutdown')
             parameter1=""
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" > /dev/null 2>&1
+            ${pve_vm_manager} "${arg_action}" "${arg_vm_id}" > /dev/null 2>&1
             status="${?}"
             ;;
         'vm:stop')
             parameter1=""
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" > /dev/null 2>&1
+            ${pve_vm_manager} "${arg_action}" "${arg_vm_id}" > /dev/null 2>&1
             status="${?}"
             ;;
         'vm:status')
-            echo -n "vm${pve_vm_id}: "
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}"
+            echo -n "vm${arg_vm_id}: "
+            ${pve_vm_manager} "${arg_action}" "${arg_vm_id}"
             status="${?}"
             ;;
         'vm:listsnapshot')
-            echo "vm${pve_vm_id}:"
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}"
+            echo "vm${arg_vm_id}:"
+            ${pve_vm_manager} "${arg_action}" "${arg_vm_id}"
             status="${?}"
             ;;
         'vm:snapshot')
             parameter1="${arg_snapname}"
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" "${parameter1}" > /dev/null 2>&1
+            ${pve_vm_manager} "${arg_action}" "${arg_vm_id}" "${parameter1}" > /dev/null 2>&1
             status="${?}"
             ;;
         'vm:rollback')
             parameter1="${arg_snapname}"
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" "${parameter1}" > /dev/null 2>&1
+            ${pve_vm_manager} "${arg_action}" "${arg_vm_id}" "${parameter1}" > /dev/null 2>&1
             status="${?}"
             ;;
         'vm:delsnapshot')
             parameter1="${arg_snapname}"
-            ${pve_vm_manager} "${arg_action}" "${pve_vm_id}" "${parameter1}" > /dev/null 2>&1
+            ${pve_vm_manager} "${arg_action}" "${arg_vm_id}" "${parameter1}" > /dev/null 2>&1
             status="${?}"
             ;;
         *)
@@ -370,9 +370,9 @@ do
     fi
     if [ "${parameter1:-not-set}" != 'not-set' ]
     then
-        echo "vm${pve_vm_id}: ${arg_action} ${parameter1} has ${result}"
+        echo "vm${arg_vm_id}: ${arg_action} ${parameter1} has ${result}"
     else
-        echo "vm${pve_vm_id}: ${arg_action} has ${result}"
+        echo "vm${arg_vm_id}: ${arg_action} has ${result}"
     fi
 done
 
