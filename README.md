@@ -79,19 +79,23 @@ Actions:
 
 Options:
 
-    --help
-    --ct-list={ctid,...}    ct list (defaults to 'none'; specify 'all' to select all CTs as with pct list, 'running' to select all running CTs or 'stopped' to select all stopped CTs)
-    --vm-list={vmid,...}    vm list (defaults to 'none'; specify 'all' to select all VMs as with qm list, 'running' to select all running CTs or 'stopped' to select all stopped VMs)
-    --all                   set ct-list and vm-list to 'all'
-    --running               set ct-list and vm-list to 'running'
-    --stopped               set ct-list and vm-list to 'stopped'
+    --ct-list={ctid,...}        ct list (defaults to 'none'; specify 'all' to select all CTs as with pct list, 'running' to select all running CTs or 'stopped' to select all stopped CTs)
+    --vm-list={vmid,...}        vm list (defaults to 'none'; specify 'all' to select all VMs as with qm list, 'running' to select all running CTs or 'stopped' to select all stopped VMs)
+    --all                       set ct-list and vm-list to 'all'
+    --running                   set ct-list and vm-list to 'running'
+    --stopped                   set ct-list and vm-list to 'stopped'
+
+Special options:
+
+    --help                      display this help and exit
+    --debug[={yes|no}]          enable/disable the debug mode
 
 Environment variables:
 
-    PVE_CT_MANAGER          ct manager (defaults to pct)
-    PVE_CT_LIST             ct list    (defaults to none)
-    PVE_VM_MANAGER          vm manager (defaults to qm)
-    PVE_VM_LIST             vm list    (defaults to none)
+    PVE_CT_MANAGER              ct manager (defaults to pct)
+    PVE_CT_LIST                 ct list    (defaults to pct list)
+    PVE_VM_MANAGER              vm manager (defaults to qm)
+    PVE_VM_LIST                 vm list    (defaults to qm list)
 
 ```
 
