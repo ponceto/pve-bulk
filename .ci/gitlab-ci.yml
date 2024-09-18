@@ -30,8 +30,7 @@ build-deb_amd64:
   stage: build-deb
   when: on_success
   tags:
-    - debian-12
-    - amd64
+    - debian-12-amd64
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "release"
@@ -52,8 +51,7 @@ build-deb_arm64:
   stage: build-deb
   when: on_success
   tags:
-    - debian-12
-    - arm64
+    - debian-12-arm64
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "release"
