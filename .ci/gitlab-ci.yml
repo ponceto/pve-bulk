@@ -16,6 +16,13 @@
 #
 
 # ----------------------------------------------------------------------------
+# default
+# ----------------------------------------------------------------------------
+
+default:
+  image: debian:stable
+
+# ----------------------------------------------------------------------------
 # stages
 # ----------------------------------------------------------------------------
 
@@ -30,10 +37,13 @@ build-deb_amd64:
   stage: build-deb
   when: on_success
   tags:
-    - debian-12-amd64
+    - docker
+    - amd64
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "release"
+  before_script:
+    - ./.ci/ci-setup-debian.sh
   script:
     - ./.ci/ci-build-deb.sh
   artifacts:
@@ -51,10 +61,13 @@ build-deb_arm64:
   stage: build-deb
   when: on_success
   tags:
-    - debian-12-arm64
+    - docker
+    - arm64
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
     - if: $CI_COMMIT_BRANCH == "release"
+  before_script:
+    - ./.ci/ci-setup-debian.sh
   script:
     - ./.ci/ci-build-deb.sh
   artifacts:
